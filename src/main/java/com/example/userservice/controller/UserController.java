@@ -46,9 +46,7 @@ public class UserController {
         Iterable<User> allUser = userService.getAllUser();
 
         List<ResponseUser> result = new ArrayList<>();
-        allUser.forEach(v -> {
-            result.add(new ObjectMapper().convertValue(v, ResponseUser.class));
-        });
+        allUser.forEach(v -> result.add(new ObjectMapper().convertValue(v, ResponseUser.class)));
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
