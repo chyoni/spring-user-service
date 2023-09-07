@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user-service")
+@RequestMapping("/")
 public class UserController {
     private final Greeting greeting;
     private final UserService userService;
@@ -31,14 +31,6 @@ public class UserController {
     @GetMapping("/welcome")
     public String welcome() {
         return greeting.getMessage();
-    }
-
-    @PostMapping("/users")
-    public ResponseEntity<ResponseUser> createUser(@RequestBody UserDto user) {
-        userService.createUser(user);
-
-        ResponseUser responseUser = new ObjectMapper().convertValue(user, ResponseUser.class);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
 
     @GetMapping("/users")

@@ -25,13 +25,5 @@ public class User {
     @Column(nullable = false, unique = true)
     private String userId;
     @Column(nullable = false, unique = true)
-    private String encryptedPwd;
-
-    @ManyToMany
-    @JoinTable(
-            name = "user_authority",
-            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
-            inverseJoinColumns =  {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")}
-    )
-    private Set<Authority> authorities;
+    private String encryptedPassword;
 }
