@@ -1,6 +1,7 @@
 package com.example.userservice.security;
 
 import com.example.userservice.filter.JwtAuthFilter;
+import com.example.userservice.service.UserService;
 import com.example.userservice.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +25,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class WebSecurity {
     private final JwtAuthFilter jwtAuthFilter;
-    private final UserServiceImpl userServiceImpl;
+    private final UserService userService;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         //? 서버에 인증정보를 저장하지 않기에 csrf를 사용하지 않는다.
@@ -42,13 +43,10 @@ public class WebSecurity {
                 .anyRequest().authenticated()
         );
 
-        //? Spring Security JWT Filter Load
-        // http.addFilterBefore(jwtAuthorizationFilter(), BasicAuthenticationFilter.class);
-
         //? form 기반의 로그인에 대해 비 활성화하며 커스텀으로 구성한 필터를 사용한다.
         http.formLogin(AbstractHttpConfigurer::disable);
 
-        //? Spring Security Custom Filter Load
+        //? Spring Security JWT Filter Load
         http.authenticationProvider(authenticationProvider()).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         //? h2-console 화면으로 가면 Frame이 깨지는데 그걸 해결
@@ -58,9 +56,9 @@ public class WebSecurity {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userServiceImpl);
+        authenticationProvider.setUserDetailsService(userService);
         authenticationProvider.setPasswordEncoder(new BCryptPasswordEncoder());
         return authenticationProvider;
     }
@@ -70,7 +68,7 @@ public class WebSecurity {
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
 
-        authenticationManagerBuilder.userDetailsService(userServiceImpl);
+        authenticationManagerBuilder.userDetailsService(userService);
         return authenticationManagerBuilder.build();
     }
 }

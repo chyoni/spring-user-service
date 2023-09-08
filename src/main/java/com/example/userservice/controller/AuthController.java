@@ -42,7 +42,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<ResponseUser> createUser(@RequestBody UserDto user) {
-        // userService.createUser(user);
+        userService.createUser(user);
 
         ResponseUser responseUser = new ObjectMapper().convertValue(user, ResponseUser.class);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
