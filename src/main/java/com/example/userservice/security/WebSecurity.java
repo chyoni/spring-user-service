@@ -38,6 +38,7 @@ public class WebSecurity {
 
         //? h2 database 관련 console 화면, /auth/** 은 전부 인증을 하지 않고도 허용하고 나머지는 모두 인증절차를 거친다.
         http.authorizeHttpRequests(auth -> auth
+                .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/auth/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
                 .anyRequest().authenticated()
