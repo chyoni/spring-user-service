@@ -30,6 +30,7 @@ public class WebSecurity {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         //? 서버에 인증정보를 저장하지 않기에 csrf를 사용하지 않는다.
         http.csrf(AbstractHttpConfigurer::disable);
+        http.cors(AbstractHttpConfigurer::disable);
 
         //? Session 기반의 인증을 사용하지 않고 추후 JWT를 이용해서 인증한다.
         http.sessionManagement(httpSecuritySessionManagementConfigurer ->
