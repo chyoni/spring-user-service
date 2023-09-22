@@ -9,17 +9,16 @@ import com.example.userservice.repository.AuthorityRepository;
 import com.example.userservice.repository.UserRepository;
 import com.example.userservice.vo.ResponseOrder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.Environment;
+import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JCircuitBreakerFactory;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 @Slf4j
@@ -29,9 +28,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final Environment environment;
-    private final RestTemplate restTemplate;
     private final OrderServiceClient orderServiceClient;
+    private final Resilience4JCircuitBreakerFactory circuitBreakerFactory;
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -74,9 +72,14 @@ public class UserServiceImpl implements UserService {
         }*/
 
         /* Feign exception handling using FeignErrorDecoder */
-        List<ResponseOrder> ordersList = orderServiceClient.getOrders(userId);
-        userDto.setOrders(ordersList);
+        // List<ResponseOrder> ordersList = orderServiceClient.getOrders(userId);
+        log.info("Before call orders microservice");
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+        List<ResponseOrder> ordersList = circuitBreaker.run(() -> orderServiceClient.getOrders(userId),
+                throwable -> new ArrayList<>());
+        log.info("After called orders microservice");
 
+        userDto.setOrders(ordersList);
         return userDto;
     }
 

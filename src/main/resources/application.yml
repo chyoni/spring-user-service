@@ -4,7 +4,7 @@ server:
 spring:
   application:
     name: user-service
-#  datasource:
+  #  datasource:
 #    url: jdbc:h2:~/Spring/msa/gateway/h2/testdb-user
 #    username: sa
 #  jpa:
@@ -40,7 +40,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: refresh, health, beans, busrefresh
+        include: refresh, health, beans, busrefresh, info, metrics, prometheus # info, metrics, prometheus는 io.micrometer를 사용할 때 쓰이는것들
 
 logging:
   level:

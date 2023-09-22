@@ -6,6 +6,7 @@ import com.example.userservice.service.UserService;
 import com.example.userservice.vo.Greeting;
 import com.example.userservice.vo.ResponseUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -24,12 +25,14 @@ public class UserController {
     private final Environment env;
 
     @GetMapping("/health_check")
+    @Timed(value = "users.status", longTask = true)
     public String status() {
         return String.format("It's working in User Service, port(local.server.port)=%s, port(server.port)=%s, token secret=%s, token expiration time=%s",
                 env.getProperty("local.server.port"), env.getProperty("server.port"), env.getProperty("token.secret"), env.getProperty("token.expiration_time"));
     }
 
     @GetMapping("/welcome")
+    @Timed(value = "users.status", longTask = true)
     public String welcome() {
         return greeting.getMessage();
     }
